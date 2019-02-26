@@ -43,7 +43,7 @@ RSpec.describe User, type: :model do
    end
 
    
-
+   #  uniqueバリデーションのテスト
    it "重複したメールアドレスなら無効な状態であること" do 
       User.create(
          first_name: "arron",
