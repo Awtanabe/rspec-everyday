@@ -4,20 +4,27 @@ RSpec.describe Project, type: :model do
   
   
   it "締切日が過ぎていれば遅延していること" do
-    project = FactoryBot.create(:project_due_yesterday)
+    project = FactoryBot.create(:project, :due_yesterdays)
     expect(project).to be_late
   end
 
   it "締切日が今日ならスケジュールどおりであること" do 
-    project = FactoryBot.create(:project_due_today)
+    project = FactoryBot.create(:project, :due_todays)
     expect(project).to_not be_late
   end
   
   it "締切日が未来ならスケジュールどおりであること" do 
 
-    project = FactoryBot.create(:project_due_tomorrow)
+    project = FactoryBot.create(:project, :due_tomorrows)
     
     expect(project).to_not be_late
+  end
+
+  it "" do 
+    
+   project =  FactoryBot.create(:project, :with_notes)
+
+   expect(project.notes.length).to eq(5)
   end
   
   #  バリデーション ユニーク制約
