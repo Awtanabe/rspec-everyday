@@ -3,6 +3,35 @@ require'rails_helper'
 RSpec.describe User, type: :model do
   
 
+    it "有効なファクトリーを持つ事" do 
+     expect(FactoryBot.build(:user)).to be_valid
+    end
+
+    it "名がなければ無効な状態であること" do 
+      user = FactoryBot.build(:user, first_name: nil)
+      
+      user.valid?
+
+      expect(user.errors[:first_name]).to include("can't be blank")
+    end
+
+    it "インスタンスメソッドのテスト with factory bot" do 
+      user = FactoryBot.build(:user, first_name: "akifumi", last_name:"watanabe")
+      binding.pry
+      expect(user.name).to eq("akifumi watanabe")
+    end
+
+ 
+   it "重複したメールなら無効になる" do 
+     user1 = FactoryBot.create(:user, email: "test@example.com") 
+     user2 = FactoryBot.build(:user, email: "test@example.com")
+
+     user2.valid?
+     
+     expect(user2.errors[:email]).to include("has already been taken")
+   end
+
+
    it "姓、名、メール、パスワードがあれば有効な状態であること" do
      user = User.new(
         first_name: "arron",
