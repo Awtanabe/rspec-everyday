@@ -1,70 +1,123 @@
 require 'rails_helper'
 
 RSpec.describe Note, type: :model do
-  let(:user) { FactoryBot.create(:user) }
-  let(:project) { FactoryBot.create(:project, owner: user) }
+  
 
-  it "is valid with a user, project, and message" do
-    note = Note.new(
-      message: "This is a sample note.",
-      user: user,
-      project: project,
+  before do
+    # 全テストに該当するテストのデータを記載
+
+    @user = User.create(
+      first_name: "joe",
+      last_name: "tester",
+      email: "text@example.com",
+      password: "12345679"
     )
+
+    @project = @user.projects.create(
+      name:"Test Project",
+    )
+  end
+
+
+  it "ユーザー、プロジェクト、メッセージがあれば有効な状態であること" do 
+    note = Note.new(
+      message: " this is message",
+      user: @user,
+      project: @project,
+    )
+
     expect(note).to be_valid
   end
 
-  it "is invalid without a message" do
-    note = Note.new(message: nil)
+  it " メッセージがなければ無効な状態であること" do 
+    note = Note.new(message: nil) 
+    
     note.valid?
-    expect(note.errors[:message]).to include("can't be blank")
+  
+    expect(note.errors[:message]).to include("can't be blank") 
+
   end
 
-  it { is_expected.to have_attached_file(:attachment) }
 
-  describe "search message for a term" do
-    let!(:note1) {
-      FactoryBot.create(:note,
-        project: project,
-        user: user,
-        message: "This is the first note.",
+  describe "文字列に一致するメッセージを検索する" do 
+    before do 
+      @note1 = @project.notes.create(
+        message: "First message",
+        user: @user,
       )
-    }
-
-    let!(:note2) {
-      FactoryBot.create(:note,
-        project: project,
-        user: user,
-        message: "This is the second note.",
+      @note2 = @project.notes.create(
+        message: "Second message",
+        user: @user,
       )
-    }
-
-    let!(:note3) {
-      FactoryBot.create(:note,
-        project: project,
-        user: user,
-        message: "First, preheat the oven.",
+      @note3 = @project.notes.create(
+        message: "last message",
+        user: @user,
       )
-    }
+   end
+    
+   context "一致するデータが見つかるとき" do 
+    it{expect(Note.search("first")).to include(@note1)} 
+   end
 
-    context "when a match is found" do
-      it "returns notes that match the search term" do
-        expect(Note.search("first")).to include(note1, note3)
-        expect(Note.search("first")).to_not include(note2)
-      end
+   context "一致するデータが見つからない時" do 
+    it{expect(Note.search("third")).to be_empty }
+   end
+
+
+  end
+   
+  describe '字列に一致するメッセージを検索する' do
+    before do 
+      # 検索機能の周りのテストテストデータ   
+    end
+    context "一致するデータが見つかるとき" do 
+
     end
 
-    context "when no match is found" do
-      it "returns an empty collection" do
-        expect(Note.search("message")).to be_empty
-        expect(Note.count).to eq 3
-      end
+    context "一致するデータが見つからない時" do 
+
     end
+
   end
 
-  it "delegates name to the user who created it" do
-    user = instance_double("User", name: "Fake User")
-    note = Note.new
-    allow(note).to receive(:user).and_return(user)
-    expect(note.user_name).to eq "Fake User"
+
+  it " 検索文字列に一致するメモを返すこと" do 
+
+    user = User.create(
+      first_name: "akifumi",
+      last_name: "kannda", 
+      email: "test@example.com",
+      password: "1234567",
+    )
+
+    project = user.projects.create(
+      name:"Test Project",
+    )
+
+    note1 = project.notes.create(
+      message:"This is the first note",
+      user: user,
+    )
+    note2 = project.notes.create(
+      message:"First is the second note",
+      user: user,
+    )
+
+    note3 = project.notes.create(
+      message:"This is the third note",
+      user: user,
+    )
+
+    note4 = project.notes.create(
+      message:"This is the third note",
+      user: user,
+    )
+
+    expect(Note.search("first")).to include(note1, note2)
+    expect(Note.search("first")).not_to include(note3)
+    
+    expect(Note.search("secone")).to be_empty
+  
   end
+  
 end
