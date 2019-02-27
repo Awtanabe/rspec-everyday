@@ -76,4 +76,36 @@ describe "文字列に一致するメッセージを検索する" do
         user: @user,
       )
    end
-    
+
+
+# p58までのポイント
+
+期待する結果は能動形で明示的に記述すること。
+起きて ほしい ことと、起きて ほしくない ことをテストすること
+境界値テストをすること
+
+
+# p59　テストデータの作成
+
+
+## factory bot
+
+factorybotとfactorygirlの違い
+
+factorybot
+→expect(FactoryBot.build(:user).to be_valid)
+
+factorygirl
+→let(:user){create(:user)}
+
+
+## オーバーライド
+
+
+- first_name: nil
+
+it "is invalid without a first name" do
+user = FactoryBot.build(:user, first_name: nil)
+user.valid?
+expect(user.errors[:first_name]).to include("can't be blank")
+end
