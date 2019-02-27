@@ -60,6 +60,16 @@ RSpec.describe User, type: :model do
       user.valid?
       expect(user.errors[:email]).to include("has already been taken")
    end
+
+
+   it "インスタンスメソッド" do 
+     user = User.new(
+      first_name: "John",
+      last_name:  "Doe",
+      email:  "johndoe@example.com",
+     )
+     expect(user.name).to eq "John Doe"
+   end
    
 end
 
