@@ -1,6 +1,25 @@
 require 'rails_helper'
 
 RSpec.describe Project, type: :model do
+  
+  
+  it "締切日が過ぎていれば遅延していること" do
+    project = FactoryBot.create(:project_due_yesterday)
+    expect(project).to be_late
+  end
+
+  it "締切日が今日ならスケジュールどおりであること" do 
+    project = FactoryBot.create(:project_due_today)
+    expect(project).to_not be_late
+  end
+  
+  it "締切日が未来ならスケジュールどおりであること" do 
+
+    project = FactoryBot.create(:project_due_tomorrow)
+    
+    expect(project).to_not be_late
+  end
+  
   #  バリデーション ユニーク制約
   # https://qiita.com/wadako111/items/958dded40a840c35c5ec
   # validates :name, presence: true, uniqueness: { scope: :user_id }
